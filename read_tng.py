@@ -9,7 +9,7 @@ def list_hdf5_files(dir):
     """
     if type(dir) == list:
         return dir
-    elif os.isfile(dir):
+    elif os.path.isfile(dir):
         return [dir]
 
     pattern = os.path.join(dir, "*.hdf5")
