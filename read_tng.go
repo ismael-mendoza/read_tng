@@ -12,11 +12,13 @@ const (
 
 var (
 	pairCounts map[uint64]uint8
+	max1, max2 int64
 )
 
 //export ResetPairCounts
 func ResetPairCounts() {
 	pairCounts = map[uint64]uint8{ }
+	max1, max2 = 0, 0
 }
 
 
@@ -47,6 +49,9 @@ func AddPairs(
 
 func addPairs(idx1, idx2 []int64) {
 	for i := range idx1 {
+		if idx1[i] > max1 { max1 = idx1[i]+1 }
+		if idx2[i] > max2 { max2 = idx2[i]+1 }
+
 		if idx1[i] == -1 || idx2[i] == -1 { continue }
 		tag := (uint64(idx1[i]) << 32) | uint64(idx2[i])
 		if _, ok := pairCounts[tag]; ok {
@@ -65,7 +70,7 @@ func MatchPairs(from1To2 *C.longlong, n C.longlong) {
 
 func matchPairs(from1To2 []int64) {
 	for i := range from1To2 { from1To2[i] = -1 }
-	used1, used2 := make([]bool, len(from1To2)), make([]bool, len(from1To2))
+	used1, used2 := make([]bool, max1), make([]bool, max2)
 
 	n := len(pairCounts)
 	idx1, idx2, counts := make([]int, n), make([]int, n), make([]int, n)
