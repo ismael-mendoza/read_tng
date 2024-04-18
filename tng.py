@@ -9,7 +9,7 @@ import time
 import matplotlib.pyplot as plt
 
 #Annotate tpyes of the Go library
-read_tng_go = ctypes.cdll.LoadLibrary("/home/users/phil1/code/src/github.com/phil-mansfield/read_tng/read_tng.so")
+read_tng_go = ctypes.cdll.LoadLibrary("/home/imendoza/workspace/read_tng/read_tng.so")
 
 _ResetPairCounts = read_tng_go.ResetPairCounts
 _ResetPairCounts.restype = None
