@@ -251,11 +251,11 @@ def main():
     print(b_1_to_2[:20])
 
     # cache mahs and matching
-    pickle.dump(t_dmo, open(CACHE_DIR + "/tng100_tdmo.pkl", 'wb'))
-    pickle.dump(b_dmo, open(CACHE_DIR + "/tng100_bdmo.pkl", 'wb'))
-    pickle.dump(t_bar, open(CACHE_DIR + "/tng100_tbar.pkl", 'wb'))
-    pickle.dump(b_bar, open(CACHE_DIR + "/tng100_bbar.pkl", 'wb'))
-    pickle.dump(b_1_to_2, open(CACHE_DIR + "/matches.pkl", 'wb'))
+    pickle.dump(t_dmo, open(CACHE_DIR + "/tng50_tdmo.pkl", 'wb'))
+    pickle.dump(b_dmo, open(CACHE_DIR + "/tng50_bdmo.pkl", 'wb'))
+    pickle.dump(t_bar, open(CACHE_DIR + "/tng50_tbar.pkl", 'wb'))
+    pickle.dump(b_bar, open(CACHE_DIR + "/tng50_bbar.pkl", 'wb'))
+    pickle.dump(b_1_to_2, open(CACHE_DIR + "/matches_50.pkl", 'wb'))
 
 
     for i1 in range(10):
