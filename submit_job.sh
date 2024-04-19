@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=tng50_3
+#SBATCH --job-name=tng100-test1
 #SBATCH --output=%j.out
-#SBATCH --time=05:00:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -11,4 +11,4 @@
 #SBATCH --account=cavestru0
 #SBATCH --partition=standard
 module load python3.10-anaconda/2023.03
-python3 small_match_tng50_3.py
+python3 small_match.py
