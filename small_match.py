@@ -126,7 +126,6 @@ def read_small_reshaped_tree(tree_file, read_matches=False):
     if read_matches:
         matches = rt.Matches(match_file).hydro_to_dmo
         for snap in range(100):
-            print(f"Current snap: {snap}")
             t["match"][:,snap] = matches[snap][t["subfind_id"][:,snap]]
             t["match"][t["subfind_id"][:,snap] == -1,snap] = -1
 
