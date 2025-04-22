@@ -1,6 +1,6 @@
 package main
 
-import (
+import (	
 	"C"
 	"unsafe"
 )
@@ -70,7 +70,8 @@ func MatchPairs(from1To2 *C.longlong, n C.longlong) {
 
 func matchPairs(from1To2 []int64) {
 	for i := range from1To2 { from1To2[i] = -1 }
-	used1, used2 := make([]bool, max1), make([]bool, max2)
+	// I can't believe I missed those +1's for this many years.
+	used1, used2 := make([]bool, max1+1), make([]bool, max2+1)
 
 	n := len(pairCounts)
 	idx1, idx2, counts := make([]int, n), make([]int, n), make([]int, n)
