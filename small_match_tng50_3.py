@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-
-import sys
 import tng as rt
-import os.path as path
 import numpy as np
 import pickle
 
@@ -246,20 +243,16 @@ def main():
     tree_file_dmo = rt.Tree(dir_dmo)
     t_dmo, b_dmo = read_small_reshaped_tree(tree_file_dmo, is_hydro=False)
     print("Read dmo tree")
-
     print(t_bar.shape)
     print(t_dmo.shape)
+
     # b_1_to_2 gives, for each baryonic branch, the corresponding dmo branch
-    b_1_to_2 = match_branches(t_dmo, b_dmo, t_bar, b_bar)
-    print("Matched branches dmo to bar")
     b_1_to_2 = match_branches(t_bar, b_bar, t_dmo, b_dmo)
     print("Matched branches bar to dmo")
-
     print(np.sum(b_1_to_2 == -1), len(b_1_to_2))
 
     fig, ax = plt.subplots()
     snap = np.arange(100)
-
     print(b_1_to_2[:20])
 
     # cache mahs and matching
