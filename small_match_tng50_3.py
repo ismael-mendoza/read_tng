@@ -11,7 +11,7 @@ dir_dmo = "/nfs/turbo/lsa-cavestru/imendoza/TNG50_3_Dark/trees/sublink"
 dir_bar = "/nfs/turbo/lsa-cavestru/imendoza/TNG50_3/trees/sublink"
 CACHE_DIR = "/home/imendoza/workspace/read_tng/cache"
 
-MIN_MASS = 10**(12)
+MIN_MASS = 10**(9.5)
 MIN_BUFFER = 0.25
 
 def branch_edges(first_prog):
@@ -61,7 +61,7 @@ def id_to_index(sub_id, target_id):
     idx = np.arange(len(sub_id), dtype=np.int64)
     return idx + target_id - sub_id
 
-def read_small_reshaped_tree(tree_file, read_matches=False):
+def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
     # Start by reading in first progenitor ID to work out the edges of
     # the different branches
     first_prog = tree_file.read(["FirstProgenitorID"])[0]
@@ -91,6 +91,9 @@ def read_small_reshaped_tree(tree_file, read_matches=False):
     dtype = [("mdm", "f4"), ("mvir", "f4"), ("ok", "?"), ("is_sub", "?"),
              ("subfind_id", "i8"), ("first_sub_idx", "i8"), 
              ("match", "i8")]
+    if is_hydro:
+        dtype.append(("stellar_mass", "f4"))
+
     t = np.zeros((len(edges)-1, 100), dtype=dtype)
     # Used to figure out what index to put halos in
     snap = tree_file.read(["SnapNum"])[0][t_ok]
@@ -102,6 +105,10 @@ def read_small_reshaped_tree(tree_file, read_matches=False):
         edges, snap, tree_file.read(["Group_M_TopHat200"])[0][t_ok])
     subfind_id = tree_file.read(["SubhaloIDRaw"])[0][t_ok] % 100000000000
     t["subfind_id"], _, _ = reshape_branches(edges, snap, subfind_id)
+
+    if is_hydro:
+        t['stellar_mass'], _, _ = reshape_branches(
+        edges, snap, tree_file.read(["SubhaloMassInRadType"])[0][t_ok, 4])
 
     sub_id = tree_file.read(["SubhaloID"])[0][t_ok]
     first_sub = tree_file.read(["FirstSubhaloInFOFGroupID"])[0][t_ok]
@@ -210,6 +217,7 @@ def match_branches(t1, b1, t2, b2, post_infall=False):
         rt._AddPairs(bi_1[ok], bi_2[ok], np.sum(ok))
 
     b_1_to_2 = np.zeros(len(t1), dtype=np.int64)
+    print("Before _MatchPairs")
     rt._MatchPairs(b_1_to_2, len(b_1_to_2))
     return b_1_to_2
 
@@ -232,17 +240,21 @@ def main():
     # t_bar -> 2d array containing tree data. It is smaller than a full
     # sized tree.
     # b_bar -> array of "branches", where element annotates a tree branch
-    t_bar, b_bar = read_small_reshaped_tree(tree_file_bar, read_matches=True)
+    t_bar, b_bar = read_small_reshaped_tree(tree_file_bar, is_hydro=True, read_matches=True)
+    print("Read bar tree")
 
     tree_file_dmo = rt.Tree(dir_dmo)
-    t_dmo, b_dmo = read_small_reshaped_tree(tree_file_dmo)
+    t_dmo, b_dmo = read_small_reshaped_tree(tree_file_dmo, is_hydro=False)
+    print("Read dmo tree")
 
     print(t_bar.shape)
     print(t_dmo.shape)
     # b_1_to_2 gives, for each baryonic branch, the corresponding dmo branch
+    b_1_to_2 = match_branches(t_dmo, b_dmo, t_bar, b_bar)
+    print("Matched branches dmo to bar")
     b_1_to_2 = match_branches(t_bar, b_bar, t_dmo, b_dmo)
+    print("Matched branches bar to dmo")
 
-    print(t_bar.shape, t_dmo.shape)
     print(np.sum(b_1_to_2 == -1), len(b_1_to_2))
 
     fig, ax = plt.subplots()
