@@ -242,8 +242,6 @@ def main():
     tree_file_dmo = rt.Tree(dir_dmo)
     t_dmo, b_dmo = read_small_reshaped_tree(tree_file_dmo, is_hydro=False)
 
-    print(t_bar.shape)
-    print(t_dmo.shape)
     # b_1_to_2 gives, for each baryonic branch, the corresponding dmo branch
     b_1_to_2 = match_branches(t_bar, b_bar, t_dmo, b_dmo)
 
