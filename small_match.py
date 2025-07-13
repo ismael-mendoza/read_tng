@@ -86,7 +86,7 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
     m = m[t_ok]
 
     # output datastype
-    dtype = [("mdm", "f4"), ("mvir", "f4"), ("ok", "?"), ("is_sub", "?"),
+    dtype = [("mdm", "f4"), ("mvir", "f4"), ("vmax", "f4"), ("ok", "?"), ("is_sub", "?"),
              ("subfind_id", "i8"), ("first_sub_idx", "i8"), 
              ("match", "i8")]
     if is_hydro:
@@ -103,6 +103,7 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
         edges, snap, tree_file.read(["Group_M_TopHat200"])[0][t_ok])
     subfind_id = tree_file.read(["SubhaloIDRaw"])[0][t_ok] % 100000000000
     t["subfind_id"], _, _ = reshape_branches(edges, snap, subfind_id)
+    t["vmax"], _, _ = reshape_branches(edges, snap, tree_file.read(["SubhaloVmax"])[0][t_ok])
 
     if is_hydro:
         t['stellar_mass'], _, _ = reshape_branches(
@@ -121,6 +122,7 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
     for i in range(len(t)):
         t["first_sub_idx"][i,:] = tree_to_branch[t["first_sub_idx"][i,:]]
 
+    # extract other global statistics about the branches such as 'mpeak_pre'
     b = process_branches(t, t["ok"])
     if read_matches:
         ok = (b["mpeak_pre"] > MIN_MASS) & (~b["is_err"])
@@ -138,11 +140,12 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
 
 def process_branches(t, ok):
     dtype = [("infall_snap", "i4"), ("mpeak", "f4"), ("mpeak_pre", "f4"),
-             ("is_err", "?")]
+             ("is_err", "?"), ("vpeak", "f4"), ("vpeak_pre", "f4")]
     b = np.zeros(len(t), dtype=dtype)
 
     for snap in range(t.shape[1]):
-        b["mpeak"] = np.maximum(b["mpeak"], t["mdm"][:,snap])
+        b["mpeak"] = np.maximum(b["mpeak"], t["mdm"][:, snap])
+        b["vpeak"] = np.maximum(b["vpeak"], t["vmax"][:, snap])
 
     snap = np.arange(100, dtype=int)
 
@@ -160,8 +163,10 @@ def process_branches(t, ok):
 
         if b["infall_snap"][i] == 0:
             b["mpeak_pre"][i] = 0
+            b["vpeak_pre"][i] = 0
         else:
             b["mpeak_pre"][i] = np.max(t["mdm"][i,:b["infall_snap"][i]])
+            b["vpeak_pre"][i] = np.max(t["vmax"][i,:b["infall_snap"][i]])
 
 
     b["is_err"] = b["mpeak_pre"] == 0
