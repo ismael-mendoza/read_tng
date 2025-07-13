@@ -85,7 +85,7 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
     m = m[t_ok]
 
     # output datastype
-    dtype = [("mdm", "f4"), ("mvir", "f4"), ("ok", "?"), ("is_sub", "?"),
+    dtype = [("mdm", "f4"), ("mvir", "f4"), ("vmax", "f4"), ("ok", "?"), ("is_sub", "?"),
              ("subfind_id", "i8"), ("first_sub_idx", "i8"), 
              ("match", "i8")]
     if is_hydro:
@@ -102,6 +102,7 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
         edges, snap, tree_file.read(["Group_M_TopHat200"])[0][t_ok])
     subfind_id = tree_file.read(["SubhaloIDRaw"])[0][t_ok] % 100000000000
     t["subfind_id"], _, _ = reshape_branches(edges, snap, subfind_id)
+    t["vmax"], _, _ = reshape_branches(edges, snap, tree_file.read(["SubhaloVmax"])[0][t_ok])
 
     if is_hydro:
         t['stellar_mass'], _, _ = reshape_branches(
@@ -137,11 +138,12 @@ def read_small_reshaped_tree(tree_file, is_hydro=False, read_matches=False):
 
 def process_branches(t, ok):
     dtype = [("infall_snap", "i4"), ("mpeak", "f4"), ("mpeak_pre", "f4"),
-             ("is_err", "?")]
+             ("is_err", "?"), ("vpeak", "f4"), ("vpeak_pre", "f4")]
     b = np.zeros(len(t), dtype=dtype)
 
     for snap in range(t.shape[1]):
         b["mpeak"] = np.maximum(b["mpeak"], t["mdm"][:,snap])
+        b["vpeak"] = np.maximum(b["vpeak"], t["vmax"][:, snap])
 
     snap = np.arange(100, dtype=int)
 
@@ -159,9 +161,10 @@ def process_branches(t, ok):
 
         if b["infall_snap"][i] == 0:
             b["mpeak_pre"][i] = 0
+            b["vpeak_pre"][i] = 0
         else:
             b["mpeak_pre"][i] = np.max(t["mdm"][i,:b["infall_snap"][i]])
-
+            b["vpeak_pre"][i] = np.max(t["vmax"][i,:b["infall_snap"][i]])
 
     b["is_err"] = b["mpeak_pre"] == 0
 
@@ -239,11 +242,11 @@ def main():
     # b_bar -> array of "branches", where element annotates a tree branch
     t_bar, b_bar = read_small_reshaped_tree(tree_file_bar, is_hydro=True, read_matches=True)
     print("Read bar tree")
+    print(t_bar.shape)
 
     tree_file_dmo = rt.Tree(dir_dmo)
     t_dmo, b_dmo = read_small_reshaped_tree(tree_file_dmo, is_hydro=False)
     print("Read dmo tree")
-    print(t_bar.shape)
     print(t_dmo.shape)
 
     # b_1_to_2 gives, for each baryonic branch, the corresponding dmo branch
