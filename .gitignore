@@ -5,3 +5,4 @@
 **-checkpoint.py
 **-checkpoint.ipynb
 cache/
+*.npz
