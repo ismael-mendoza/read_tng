@@ -9,7 +9,7 @@ dir_dmo = "/nfs/turbo/lsa-cavestru/kuanwang/TNG_Data/TNG100-1-Dark_SubLink"
 dir_bar = "/nfs/turbo/lsa-cavestru/kuanwang/TNG_Data/TNG100-1_SubLink"
 CACHE_DIR = "/home/imendoza/workspace/read_tng/cache"
 
-MIN_MASS = 10**(11.5)
+MIN_MASS = 10**(10.0)
 MIN_BUFFER = 0.25
 
 def branch_edges(first_prog):
@@ -275,14 +275,14 @@ def main():
         ax.cla()
 
         ax.plot(snap[ok1], t_bar["mdm"][i1,ok1], c="tab:red")
-        ax.plot(snap[ok2], t_dmo["mdm"][i2,ok2], c="tab:blue")
         ax.plot(snap[ok1], t_bar["mdm"][i1,ok1], c="tab:red", ls="--")
+        ax.plot(snap[ok2], t_dmo["mdm"][i2,ok2], c="tab:blue")
         ax.plot(snap[ok2], t_dmo["mdm"][i2,ok2], c="tab:blue", ls="--")
 
         ax.set_yscale("log")
         ax.set_xlabel(r"${\rm snap}$")
         ax.set_ylabel(r"$M\ (h^{-1}\,M_\odot)$")
 
-        fig.savefig("plots/match_%02d_tng100.png" % i1)
+        fig.savefig("plots/matches/match_%02d_tng100.png" % i1)
 
 if __name__ == "__main__": main()
