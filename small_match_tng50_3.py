@@ -8,7 +8,7 @@ dir_dmo = "/nfs/turbo/lsa-cavestru/imendoza/TNG50_3_Dark/trees/sublink"
 dir_bar = "/nfs/turbo/lsa-cavestru/imendoza/TNG50_3/trees/sublink"
 CACHE_DIR = "/home/imendoza/workspace/read_tng/cache"
 
-MIN_MASS = 10**(9.5)
+MIN_MASS = 10**(11.0)
 MIN_BUFFER = 0.25
 
 def branch_edges(first_prog):
